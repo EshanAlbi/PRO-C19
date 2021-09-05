@@ -66,7 +66,7 @@ function setup() {
   invisibleGround = createSprite(200,190,400,10);
   invisibleGround.visible = false;
   
-  coinGroup = new Group();
+  coinsGroup = new Group();
   obstaclesGroup = new Group();
   
   score = 0;
@@ -75,17 +75,23 @@ function setup() {
 function draw() {
   //trex.debug = true;
   background("white");
-  text("Score: "+ score, 500,50);
+ 
 
-  // cloud.depth = trex.depth;
+   //ground.depth = trex.depth;
     trex.depth = trex.depth + 1;
-    score.depth = score.depth + 1;
+    //ground.depth = score.depth;
 
+    //score.depth = score.depth + 1;
+  
 
+     var a=text("Score: "+ score, 500,50);
+    //ground.depth = a.depth;
+
+     a.depth=a.depth+1
   
   if (gameState===PLAY){
-    score = score + Math.round(getFrameRate()/60);
-    ground.velocityX = -(6 + 3*score/100);
+    // score = score + Math.round(getFrameRate()/60);
+    // ground.velocityX = -(6 + 3*score/100);
   
     // if(keyDown("space") && trex.y >= 159) {
     //   trex.velocityY = -12;
@@ -102,9 +108,14 @@ function draw() {
     trex.collide(invisibleGround);
     // spawnClouds();
     spawnObstacles();
+    spawnCoins();
   
     if(obstaclesGroup.isTouching(trex)){
         gameState = END;
+    }
+    if(trex.isTouching(coinsGroup)){
+      score = score + 1;
+  
     }
   }
   else if (gameState === END) {
@@ -115,10 +126,9 @@ function draw() {
     ground.velocityX = 0;
     trex.velocityY = 0;
     obstaclesGroup.setVelocityXEach(0);
-    // cloudsGroup.setVelocityXEach(0);
-    
+    coinsGroup.setVelocityXEach(0)    
     //change the trex animation
-    trex.changeAnimation("collided",trex_collided);
+    //trex.changeAnimation("collided",trex_collided);
     
     //set lifetime of the game objects so that they are never destroyed
     obstaclesGroup.setLifetimeEach(-1);
@@ -146,7 +156,7 @@ function spawnObstacles() {
      obstacle.lifetime = 200;
     
     //adjust the depth
-    obstacle.depth = trex.depth;
+    //obstacle.depth = trex.depth;
     trex.depth = trex.depth + 1;
     
     //add each cloud to the group
@@ -160,24 +170,26 @@ function spawnCoins() {
   if (frameCount % 60 === 0) {
     var coin = createSprite(600,200,40,10);
     coin.y = Math.round(random(20,270));
-    coin.addImage(obstacle1);
-    coin.scale = 0.5;
+    coin.addImage(coinImage);
+    coin.scale = 0.2;
     coin.velocityX = -3;
     
      //assign lifetime to the variable
-     coin.lifetime = 200;
+     coin.lifetime = 160;
     
     //adjust the depth
     
     coin.depth = coin.depth + 1;
+    coinsGroup.add(coin)
     
     //add each cloud to the group
-    obstaclesGroup.add(obstacle);
+   // obstaclesGroup.add(obstacle);
 
     if(trex.isTouching(coin)){
       score = score + 1;
+      coin.visible=false
     }
-  }
+   }
   
 }
 
@@ -191,7 +203,7 @@ function reset(){
   restart.visible = false;
   
   obstaclesGroup.destroyEach();
-  // cloudsGroup.destroyEach();
+  coinsGroup.destroyEach();
   
   // trex.changeAnimation("running",trex_running);
   
